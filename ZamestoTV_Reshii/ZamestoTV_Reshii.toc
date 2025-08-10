@@ -1,0 +1,14 @@
+## Interface: 110200
+## Title: Helper: Reshii Wraps
+## Title-ruRU: Помощник: Повязки реши
+## Notes: Convenient menu for the cloak
+## Notes-ruRU: Удобное меню для плаща
+## Author: ZamestoTV
+## IconTexture: Interface\AddOns\ZamestoTV_Reshii\goblin
+## Version: 1.2.7
+## SavedVariables: TWWUpgradeAndGemDB
+
+## Category-enUS: Addons ZamestoTV
+## Category-ruRU: Аддоны ZamestoTV
+
+Reshii.lua
