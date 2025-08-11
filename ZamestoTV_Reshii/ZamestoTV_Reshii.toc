@@ -5,8 +5,8 @@
 ## Notes-ruRU: Удобное меню для плаща
 ## Author: ZamestoTV
 ## IconTexture: Interface\AddOns\ZamestoTV_Reshii\goblin
-## Version: 1.2.7
-## SavedVariables: TWWUpgradeAndGemDB
+## Version: 1.2.9
+## SavedVariables: Reshii_WrapsDB
 
 ## Category-enUS: Addons ZamestoTV
 ## Category-ruRU: Аддоны ZamestoTV

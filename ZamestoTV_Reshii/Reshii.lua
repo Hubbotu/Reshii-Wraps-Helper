@@ -1,7 +1,7 @@
-local ADDON_NAME = "TWW_UpgradeAndGem"
+local ADDON_NAME = "Reshii_Wraps"
 
-if not TWWUpgradeAndGemDB then
-    TWWUpgradeAndGemDB = {}
+if not Reshii_WrapsDB then
+    Reshii_WrapsDB = {}
 end
 
 -- === CONFIG ===
@@ -155,7 +155,7 @@ closeButton:SetSize(24, 24)
 closeButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -6, -6)
 closeButton:SetScript("OnClick", function()
     frame:Hide()
-    TWWUpgradeAndGemDB.frameOpen = false -- Save frame closed state
+    Reshii_WrapsDB.frameOpen = false -- Save frame closed state
 end)
 
 -- === TALENTS BUTTON ===
@@ -189,7 +189,7 @@ local function EvaluateAndUpdate()
     local equippedItemID = GetInventoryItemID("player", ITEM_SLOT)
     if not equippedItemID or equippedItemID ~= ITEM_ID_TO_TRACK then
         frame:Hide()
-        TWWUpgradeAndGemDB.frameOpen = false -- Save closed state if item not equipped
+        Reshii_WrapsDB.frameOpen = false -- Save closed state if item not equipped
         return
     end
 
@@ -225,9 +225,9 @@ local function EvaluateAndUpdate()
         label:SetText(itemName .. ": " .. totalEarned)
         subLabel:SetText("Upgrade! ("..totalEarned..")")
         gemLabel:SetText("Gem: "..gemText)
-        if TWWUpgradeAndGemDB.frameOpen ~= false then
+        if Reshii_WrapsDB.frameOpen ~= false then
             frame:Show()
-            TWWUpgradeAndGemDB.frameOpen = true
+            Reshii_WrapsDB.frameOpen = true
         else
             frame:Hide()
         end
@@ -236,9 +236,9 @@ local function EvaluateAndUpdate()
         label:SetText(itemName .. ": " .. totalEarned)
         subLabel:SetText("No upgrade needed")
         gemLabel:SetText("Gem: "..gemText)
-        if TWWUpgradeAndGemDB.frameOpen ~= false then
+        if Reshii_WrapsDB.frameOpen ~= false then
             frame:Show()
-            TWWUpgradeAndGemDB.frameOpen = true
+            Reshii_WrapsDB.frameOpen = true
         else
             frame:Hide()
         end
@@ -256,8 +256,8 @@ eventFrame:RegisterEvent("QUEST_LOG_UPDATE")
 
 eventFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
-        if TWWUpgradeAndGemDB.frameOpen == nil then
-            TWWUpgradeAndGemDB.frameOpen = true -- default to open on first load
+        if Reshii_WrapsDB.frameOpen == nil then
+            Reshii_WrapsDB.frameOpen = true -- default to open on first load
         end
         EvaluateAndUpdate()
     else
@@ -265,21 +265,16 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
     end
 end)
 
--- Slash commands for refreshing / toggling
-
-SLASH_TWWUPGEM1 = "/twwupgem"
-SlashCmdList["TWWUPGEM"] = function()
-    EvaluateAndUpdate()
-end
+-- Slash commands for toggling
 
 SLASH_TWWWRAPS1 = "/wraps"
 SlashCmdList["TWWWRAPS"] = function()
     if frame:IsShown() then
         frame:Hide()
-        TWWUpgradeAndGemDB.frameOpen = false
+        Reshii_WrapsDB.frameOpen = false
     else
         frame:Show()
-        TWWUpgradeAndGemDB.frameOpen = true
+        Reshii_WrapsDB.frameOpen = true
     end
 end
 
