@@ -1,6 +1,6 @@
 ## Interface: 110200
-## Title: Helper: Reshii Wraps
-## Title-ruRU: Помощник: Повязки реши
+## Title: Reshii Wraps Helper
+## Title-ruRU: Помощник для Повязок реши
 ## Notes: Convenient menu for the cloak
 ## Notes-ruRU: Удобное меню для плаща
 ## Author: ZamestoTV

@@ -9,7 +9,6 @@ end
 local ITEM_ID_TO_TRACK = 235499 -- Reshii Wraps
 local ITEM_SLOT = 15 -- Cloak slot
 local CURRENCY_ID = 3278 -- Upgrade currency
-local QUEST_ID = 90955 -- Quest to check
 
 local UPGRADE_STEPS = {
     {need = 3, maxBonus = 9844},
@@ -18,6 +17,8 @@ local UPGRADE_STEPS = {
     {need = 12, maxBonus = 9883},
     {need = 15, maxBonus = 9893},
 }
+
+local VALID_BONUS_IDS = {9837, 9844, 9850, 9877, 9883, 9893}
 
 -- === GEM DATA ===
 
@@ -95,15 +96,19 @@ local function GetCurrencyInfoSafe(currencyID)
 end
 
 local function GetHighestNumericTokenFromItemLink(link)
-    if not link then return 0 end
+    if not link then return 9837 end -- Default to base bonus ID
     local h = string.match(link, "|Hitem:([^|]+)|h")
-    if not h then return 0 end
+    if not h then return 9837 end
     local tokens = {strsplit(":", h)}
-    local maxNum = 0
-    for i = 1, #tokens do
-        local n = tonumber(tokens[i])
-        if n and n > maxNum then
-            maxNum = n
+    local numBonuses = tonumber(tokens[14]) or 0
+    if numBonuses == 0 then return 9837 end
+    local maxNum = 9837 -- Default to base bonus ID
+    for i = 1, numBonuses do
+        local bonus = tonumber(tokens[14 + i]) or 0
+        for _, validID in ipairs(VALID_BONUS_IDS) do
+            if bonus == validID and bonus > maxNum then
+                maxNum = bonus
+            end
         end
     end
     return maxNum
@@ -189,25 +194,17 @@ local function EvaluateAndUpdate()
     local equippedItemID = GetInventoryItemID("player", ITEM_SLOT)
     if not equippedItemID or equippedItemID ~= ITEM_ID_TO_TRACK then
         frame:Hide()
-        Reshii_WrapsDB.frameOpen = false -- Save closed state if item not equipped
+        Reshii_WrapsDB.frameOpen = false
         return
     end
 
     local itemLink = GetInventoryItemLink("player", ITEM_SLOT)
-    local itemName = itemLink and GetItemInfo(itemLink) or ("Item "..ITEM_ID_TO_TRACK)
+    local itemName = itemLink and GetItemInfo(itemLink) or (" galacticaItem " .. ITEM_ID_TO_TRACK)
+    local currentBonus = GetHighestNumericTokenFromItemLink(itemLink)
+
     local currentBonus = GetHighestNumericTokenFromItemLink(itemLink)
     local cinfo = GetCurrencyInfoSafe(CURRENCY_ID)
     local totalEarned = cinfo.totalEarned or 0
-    local isQuestCompleted = C_QuestLog.IsQuestFlaggedCompleted(QUEST_ID)
-
-    -- Check upgrade conditions
-    local shouldShowUpgrade = false
-    for _, step in ipairs(UPGRADE_STEPS) do
-        if totalEarned >= step.need and (currentBonus == 0 or currentBonus < step.maxBonus) then
-            shouldShowUpgrade = true
-            break
-        end
-    end
 
     -- Gem info
     local gemText = "Missing Gem"
@@ -220,28 +217,25 @@ local function EvaluateAndUpdate()
         end
     end
 
-    if shouldShowUpgrade or not isQuestCompleted then
-        icon:SetTexture(cinfo.iconFileID or select(10, GetItemInfo(itemLink)))
-        label:SetText(itemName .. ": " .. totalEarned)
-        subLabel:SetText("Upgrade! ("..totalEarned..")")
-        gemLabel:SetText("Gem: "..gemText)
-        if Reshii_WrapsDB.frameOpen ~= false then
-            frame:Show()
-            Reshii_WrapsDB.frameOpen = true
-        else
-            frame:Hide()
-        end
+    -- Upgrade check based on Boss_ruRU2 conditions
+    local shouldShowUpgrade =
+        (totalEarned >= 3 and currentBonus < 9844) or
+        (totalEarned >= 6 and currentBonus < 9850) or
+        (totalEarned >= 9 and currentBonus < 9877) or
+        (totalEarned >= 12 and currentBonus < 9883) or
+        (totalEarned >= 15 and currentBonus < 9893)
+
+    -- Update display
+    icon:SetTexture(shouldShowUpgrade and cinfo.iconFileID or GetItemIcon(ITEM_ID_TO_TRACK))
+    label:SetText(itemName .. ": " .. totalEarned)
+    subLabel:SetText(shouldShowUpgrade and "Upgrade!" or "No upgrade needed")
+    gemLabel:SetText("Gem: " .. gemText)
+
+    if Reshii_WrapsDB.frameOpen ~= false then
+        frame:Show()
+        Reshii_WrapsDB.frameOpen = true
     else
-        icon:SetTexture(select(10, GetItemInfo(itemLink)))
-        label:SetText(itemName .. ": " .. totalEarned)
-        subLabel:SetText("No upgrade needed")
-        gemLabel:SetText("Gem: "..gemText)
-        if Reshii_WrapsDB.frameOpen ~= false then
-            frame:Show()
-            Reshii_WrapsDB.frameOpen = true
-        else
-            frame:Hide()
-        end
+        frame:Hide()
     end
 end
 
